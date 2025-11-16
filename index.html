@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Điều Khiển Lương & Hiệu Suất - Build Talents</title>
+    
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tải Google Font 'Oswald' & 'Inter' -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tải thư viện Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Cấu hình Tailwind tùy chỉnh (Giữ nguyên DNA thương hiệu) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'oswald': ['Oswald', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        'bt-orange': '#FF9800',
+                        'bt-green': '#009688',
+                        'bt-blue-light': '#5C6BC0',
+                        'bt-blue-dark': '#1a237e',
+                        'bt-red': '#EF5350'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Oswald', 'sans-serif';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .font-inter {
+            font-family: 'Inter', 'sans-serif';
+        }
+        /* ... scrollbar styles ... */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #5C6BC0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #1a237e; }
+
+        /* Thẻ KPI */
+        .kpi-card {
+            background-color: white;
+            border-radius: 0.75rem; /* 12px */
+            padding: 1.5rem; /* 24px */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-left-width: 6px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-bt-blue-dark font-oswald">
+
+    <!-- Toàn bộ ứng dụng -->
+    <div class="min-h-screen flex flex-col">
+
+        <!-- Header -->
+        <header class="bg-bt-blue-dark text-white shadow-2xl">
+            <div class="container mx-auto px-6 py-12 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold tracking-wider uppercase">
+                    BẢNG ĐIỀU KHIỂN LƯƠNG & HIỆU SUẤT
+                </h1>
+                <p class="mt-4 text-xl md:text-2xl font-light text-bt-orange tracking-wide max-w-4xl mx-auto">
+                    Chẩn đoán "Rủi Ro Nghỉ Việc" (Flight Risk) và "Sự Lãng Phí" (Inefficiency)
+                </p>
+            </div>
+        </header>
+
+        <!-- Phần thân chính: Dashboard -->
+        <main id="dashboard" class="container mx-auto px-4 md:px-6 py-12 flex-grow">
+            
+            <div class="max-w-6xl mx-auto">
+                
+                <h2 class="text-3xl md:text-4xl font-bold text-center uppercase text-bt-blue-dark mb-6">
+                    Phân Tích So Sánh Lương (Compa-ratio) và Hiệu Suất
+                </h2>
+                <p class="font-inter text-lg font-light text-center text-gray-700 max-w-2xl mx-auto mb-12">
+                    Lãnh đạo không hỏi "Lương chúng ta cao hay thấp?", họ hỏi "Chúng ta đang trả lương cho ĐÚNG người chưa?". Đây là câu trả lời.
+                </p>
+
+                <!-- 1. Biểu đồ Scatter Plot -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Biểu đồ Scatter Plot -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-2xl font-bold uppercase text-bt-blue-dark mb-4">Ma Trận Lương & Hiệu Suất</h3>
+                        <div class="relative h-96 md:h-[500px]">
+                            <canvas id="compensationChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Phân Tích Của AI -->
+                    <div class="bg-bt-blue-dark p-8 rounded-2xl shadow-lg">
+                        <h3 class="text-2xl font-bold uppercase text-white mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 inline-block mr-2 text-bt-orange"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.25 18.75l.813 2.846.813-2.846a4.5 4.5 0 0 0 3.09-3.09L25.75 12l-2.846-.813a4.5 4.5 0 0 0-3.09-3.09L19.75 5.25l-.813 2.846a4.5 4.5 0 0 0-3.09 3.09L13.25 12l2.846.813a4.5 4.5 0 0 0 3.09 3.09Z" /></svg>
+                            Phân Tích Của AI
+                        </h3>
+                        
+                        <div class="font-inter space-y-4">
+                            <div class="bg-bt-red/10 p-4 rounded-lg">
+                                <h4 class="font-bold text-bt-red uppercase">1. Rủi Ro Nghỉ Việc (Flight Risk)</h4>
+                                <p class="font-light text-white">Phát hiện <span class="font-bold text-xl">12</span> nhân viên (Góc phần tư 1 - Hiệu suất cao) đang bị trả lương <span class="font-bold">thấp hơn 20%</span> so với thị trường.
+                                <br><span class="font-bold text-bt-red mt-2 block">→ Đây là rủi ro nghỉ việc CẤP ĐỘ CAO.</span></p>
+                            </div>
+                            
+                            <div class="bg-bt-orange/10 p-4 rounded-lg">
+                                <h4 class="font-bold text-bt-orange uppercase">2. Lãng Phí (Inefficiency)</h4>
+                                <p class="font-light text-white">Phát hiện <span class="font-bold text-xl">8</span> nhân viên (Góc phần tư 3 - Hiệu suất thấp) đang được trả lương <span class="font-bold">cao hơn 10%</span> so với thị trường.
+                                <br><span class="font-bold text-bt-orange mt-2 block">→ Thiệt hại ước tính: 800 triệu/năm.</span></p>
+                            </div>
+
+                            <div class="bg-bt-green/10 p-4 rounded-lg">
+                                <h4 class="font-bold text-bt-green uppercase">Đề Xuất (Cấp 3)</h4>
+                                <p class="font-light text-white">1. <span class="font-bold">Ưu tiên 1:</span> Sử dụng 800 triệu tiết kiệm được từ (2) để <span class="font-bold">điều chỉnh lương ngay lập tức</span> cho nhóm (1) và giữ chân họ.
+                                <br>2. <span class="font-bold">Ưu tiên 2:</span> Xây dựng Kế hoạch Cải thiện Hiệu suất (PIP) cho nhóm (2).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Phần Câu Lệnh AI -->
+                <section class="container mx-auto px-4 md:px-6 py-12 mt-12">
+                    <div class="max-w-4xl mx-auto bg-white p-8 md:p-10 rounded-2xl shadow-lg border-t-8 border-bt-orange">
+                        <h2 class="text-3xl md:text-4xl font-bold text-center uppercase text-bt-blue-dark mb-10">
+                            Câu Lệnh (Prompts) AI Đã Tạo Ra Bảng Này
+                        </h2>
+                        
+                        <div class="space-y-6 font-inter">
+                            <div class="p-6 rounded-lg border-l-4 border-bt-blue-light bg-blue-50">
+                                <h3 class="font-oswald text-xl font-bold uppercase text-bt-blue-light mb-2">CẤP 1: THU THẬP DỮ LIỆU</h3>
+                                <p class="text-lg font-medium text-bt-blue-dark bg-white p-4 rounded shadow-inner">
+                                    "Xuất dữ liệu của toàn bộ nhân viên bao gồm 2 cột: (1) Điểm đánh giá hiệu suất cuối năm (thang 1-5), và (2) Tỷ lệ so sánh lương với thị trường (Compa-ratio, dạng %)."
+                                </p>
+                            </div>
+                            
+                            <div class="p-6 rounded-lg border-l-4 border-bt-green bg-green-50">
+                                <h3 class="font-oswald text-xl font-bold uppercase text-bt-green mb-2">CẤP 2: TÌM MÔ HÌNH ẨN</h3>
+                                <p class="text-lg font-medium text-bt-blue-dark bg-white p-4 rounded shadow-inner">
+                                    "Vẽ biểu đồ phân tán (scatter plot) với trục X là 'Hiệu suất' và trục Y là 'Tỷ lệ Lương'. Đặt 2 đường tham chiếu: X=3 (Hiệu suất trung bình) và Y=100% (Lương trung bình thị trường)."
+                                </p>
+                            </div>
+
+                            <div class="p-6 rounded-lg border-l-4 border-bt-orange bg-yellow-50">
+                                <h3 class="font-oswald text-xl font-bold uppercase text-bt-orange mb-2">CẤP 3: LƯỢNG HÓA & ĐỀ XUẤT</h3>
+                                <p class="text-lg font-medium text-bt-blue-dark bg-white p-4 rounded shadow-inner">
+                                    "Có bao nhiêu nhân viên nằm trong góc <span class="font-bold text-bt-red">'Hiệu suất cao > 4'</span> nhưng <span class="font-bold text-bt-red">'Lương thấp < 80%'</span>? Lượng hóa chi phí nếu chúng ta mất họ. Đề xuất hành động can thiệp."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-bt-blue-dark text-bt-blue-light text-center p-6 mt-16 shadow-inner">
+            <p class="font-light tracking-wider">&copy; 2024 - Rosie Đào Hạnh Giang CEO Build Talents</p>
+        </footer>
+
+    </div>
+
+    <!-- JavaScript để vẽ biểu đồ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Dữ liệu màu sắc từ Tailwind config
+            const colors = {
+                orange: '#FF9800',
+                green: '#009688',
+                blueLight: '#5C6BC0',
+                red: '#EF5350'
+            };
+
+            // Hàm tạo dữ liệu scatter plot ngẫu nhiên
+            function generateScatterData() {
+                const data = [];
+                // Góc 1: Hiệu suất cao, Lương thấp (Rủi ro)
+                for (let i = 0; i < 12; i++) {
+                    data.push({ x: Math.random() * 1 + 4, y: Math.random() * 20 + 60, r: 5, status: 'Rủi Ro' });
+                }
+                // Góc 2: Hiệu suất cao, Lương cao (Ngôi sao)
+                for (let i = 0; i < 15; i++) {
+                    data.push({ x: Math.random() * 1 + 4, y: Math.random() * 40 + 100, r: 5, status: 'Ngôi Sao' });
+                }
+                // Góc 3: Hiệu suất thấp, Lương cao (Lãng phí)
+                for (let i = 0; i < 8; i++) {
+                    data.push({ x: Math.random() * 2 + 1, y: Math.random() * 30 + 100, r: 5, status: 'Lãng Phí' });
+                }
+                // Góc 4: Hiệu suất thấp, Lương thấp (Cần cải thiện)
+                for (let i = 0; i < 20; i++) {
+                    data.push({ x: Math.random() * 2 + 1, y: Math.random() * 40 + 60, r: 5, status: 'Cần Cải Thiện' });
+                }
+                // Nhóm trung bình
+                for (let i = 0; i < 40; i++) {
+                    data.push({ x: Math.random() * 2 + 2, y: Math.random() * 20 + 80, r: 5, status: 'Nòng Cốt' });
+                }
+                return data;
+            }
+
+            // Biểu đồ: Ma Trận Lương & Hiệu Suất
+            const ctx = document.getElementById('compensationChart');
+            if (ctx) {
+                const scatterData = generateScatterData();
+                new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Rủi Ro (H.suất cao, Lương thấp)',
+                                data: scatterData.filter(d => d.status === 'Rủi Ro'),
+                                backgroundColor: colors.red
+                            },
+                            {
+                                label: 'Ngôi Sao (H.suất cao, Lương cao)',
+                                data: scatterData.filter(d => d.status === 'Ngôi Sao'),
+                                backgroundColor: colors.green
+                            },
+                            {
+                                label: 'Lãng Phí (H.suất thấp, Lương cao)',
+                                data: scatterData.filter(d => d.status === 'Lãng Phí'),
+                                backgroundColor: colors.orange
+                            },
+                            {
+                                label: 'Nòng Cốt (Trung bình)',
+                                data: scatterData.filter(d => d.status === 'Nòng Cốt'),
+                                backgroundColor: colors.blueLight
+                            },
+                            {
+                                label: 'Cần Cải Thiện (H.suất thấp, Lương thấp)',
+                                data: scatterData.filter(d => d.status === 'Cần Cải Thiện'),
+                                backgroundColor: 'rgba(158, 158, 158, 0.5)' // Gray
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Đánh giá Hiệu suất (1 -> 5)',
+                                    font: { family: 'Inter', size: 14 }
+                                },
+                                min: 1,
+                                max: 5
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Lương so với Thị trường (%)',
+                                    font: { family: 'Inter', size: 14 }
+                                },
+                                min: 60,
+                                max: 140,
+                                ticks: {
+                                    callback: function(value) { return value + '%' }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: { family: 'Inter' }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += `(Hiệu suất: ${context.parsed.x}, Lương: ${context.parsed.y}%)`;
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
